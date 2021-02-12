@@ -17,6 +17,9 @@ to a problem with the Python-to-Java bridge JPype. Oddly, the Comsol
 documentation insists on calling `System.exit(0)` at the end of Java
 programs too, where such a call should not be necessary.
 
+Edit: This seems to work as of JPype 1.2.2-dev0 if we set configure
+the shutdown behavior with `jpype.config.destroy_jvm = False`.
+
 The script does not depend on MPh, but starts the Comsol client
 directly via JPype. Paths to the Comsol installation are hard-coded
 for a Windows installation of Comsol 5.5. Other versions or install
@@ -27,6 +30,7 @@ macOS by 'maci64'.
 
 import jpype
 import jpype.imports
+import jpype.config
 from timeit import default_timer as now
 from pathlib import Path
 
@@ -34,6 +38,7 @@ print(f'Starting Comsol\'s Java VM via JPype {jpype.__version__}.')
 t0 = now()
 root = Path(r'C:\Program Files\COMSOL\COMSOL55\Multiphysics')
 jvm  = root/'java'/'win64'/'jre'/'bin'/'server'/'jvm.dll'
+jpype.config.destroy_jvm = False
 jpype.startJVM(str(jvm), classpath=str(root/'plugins'/'*'))
 print(f'Java VM started in {now()-t0:.3f} seconds.')
 
